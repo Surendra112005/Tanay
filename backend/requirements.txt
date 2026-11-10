@@ -1,0 +1,15 @@
+ollama
+faster-whisper
+deep-translator
+langdetect
+sounddevice
+scipy
+numpy
+TTS
+pygame
+transformers
+torch
+fastapi
+uvicorn
+pydantic
+pandas

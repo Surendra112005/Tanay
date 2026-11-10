@@ -27,7 +27,7 @@ Many digital assistants are optimized for short commands rather than meaningful,
 - The web chat does not invoke the standalone profile extractor or the `profile_data` memory system.
 - The frontend Memory Vault writes `memories`, but the AI brain retrieves `chat_history`, so Vault entries are not supplied to prompts.
 - Backend emotion currently changes prompt text and frontend visual state, but TTS voice speed, facial expressions, and lip synchronization are not connected.
-- Authentication is a demo-only hard-coded credential check and does not protect admin API requests.
+- Admin login credentials are configured through environment variables, but admin API requests are not protected by the returned token.
 - Continuous conversational streaming, production deployment, robust tests, and secure multi-user isolation are not implemented.
 
 ## Key Features
@@ -191,7 +191,15 @@ npm install
 Set-Location ..
 ```
 
-No `.env` file or environment-variable configuration is currently used by the application. Translation uses the online Google translator service through `deep-translator`. Microphone use requires an available system input device. The repository does not declare a separate FFmpeg dependency; verify the audio/model requirements of the installed Faster-Whisper and TTS versions on the target machine.
+Before starting the backend, configure `TANAY_ADMIN_USERNAME` and `TANAY_ADMIN_PASSWORD` in its environment to enable the admin login. For example, set them in PowerShell before running `.\start_app.bat`:
+
+```powershell
+$env:TANAY_ADMIN_USERNAME = "your-admin-name"
+$env:TANAY_ADMIN_PASSWORD = "use-a-unique-password"
+.\start_app.bat
+```
+
+These credentials only gate the frontend login; admin API requests do not validate the returned token. Do not expose the backend to untrusted networks. Translation uses the online Google translator service through `deep-translator`. Microphone use requires an available system input device. The repository does not declare a separate FFmpeg dependency; verify the audio/model requirements of the installed Faster-Whisper and TTS versions on the target machine.
 
 ## Running Tanay
 
@@ -256,13 +264,13 @@ The frontend API URL is hard-coded to `http://localhost:8000` in `frontend/src/u
 
 ## Limitations
 
-- Admin APIs are reachable without checking the token saved by the frontend; the hard-coded `admin` / `admin123` credential is not secure.
+- Admin APIs are reachable without checking the token saved by the frontend; configured login credentials do not secure those API routes.
 - API base URLs, user IDs, and relationship records are hard-coded for local development.
 - The web route may generate many persistent WAV files in `backend/outputs`.
 - The database contains local user/profile/chat data and should be treated as private.
 - Translation is not offline, while model loading can require downloads and significant memory.
 - The frontend and backend use different profile and memory concepts.
-- The project has no root `.gitignore`, license, CI configuration, or production configuration.
+- The project has no license, CI configuration, or production configuration.
 
 ## Future Vision
 
@@ -308,7 +316,7 @@ backend/datasets/**/audio/
 
 Do not push `backend/database/tanay.db`, `backend/memory/memory.json`, chat/audio outputs, `live.wav`, `response.wav`, Python caches, `frontend/dist`, `.venv`, or any downloaded model cache. The database currently contains hundreds of chat rows and profile data. Review whether the speech dataset and all GLB assets may legally be redistributed; the repository has no license file or asset provenance documentation.
 
-The backend also contains a hard-coded demo password and token. They are not external secrets, but they must be removed or replaced before any public deployment.
+The backend admin login requires environment-configured credentials. Its admin APIs remain unauthenticated and must not be exposed publicly.
 
 ## Contributors
 
